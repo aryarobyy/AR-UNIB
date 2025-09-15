@@ -1,7 +1,7 @@
 class TrackModel {
-  final int? id;
-  final int buildingId;
-  final int roomId;
+  final String? id;
+  final String buildingId;
+  final String roomId;
   final List<dynamic> path;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -16,9 +16,9 @@ class TrackModel {
   });
 
   TrackModel copyWith({
-    int? id,
-    int? buildingId,
-    int? roomId,
+    String? id,
+    String? buildingId,
+    String? roomId,
     List<dynamic>? path,
     DateTime? createdAt,
     DateTime? updatedAt,
