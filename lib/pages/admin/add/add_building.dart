@@ -1,20 +1,19 @@
 part of 'add.dart';
 
-class AddRoom extends ConsumerStatefulWidget {
-  const AddRoom({super.key});
+class AddBuilding extends ConsumerStatefulWidget {
+  const AddBuilding({super.key});
 
   @override
-  ConsumerState createState() => _AddRoomState();
+  ConsumerState createState() => _AddBuildingState();
 }
 
-class _AddRoomState extends ConsumerState<AddRoom> {
+class _AddBuildingState extends ConsumerState<AddBuilding> {
   final ImagesService _imageService = ImagesService();
 
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _roomCodeController = TextEditingController();
-  final _floorController = TextEditingController();
-  final _buildingIdController = TextEditingController();
+  final _longitudeController = TextEditingController();
+  final _latitudeController = TextEditingController();
 
   Future<void> _pickImage(WidgetRef ref) async {
     final file = await _imageService.pickImage();
@@ -27,23 +26,20 @@ class _AddRoomState extends ConsumerState<AddRoom> {
   Future<void> _submitHandler(
       BuildContext context,
       WidgetRef ref,
-      RoomNotifier notifier,
+      BuildingNotifier notifier,
       File? file,
-      RoomState state
+      BuildingState state
       ) async {
     final isLoading = ref.read(loadingProvider);
     if (isLoading) return;
 
     final name = _nameController.text.trim();
     final description = _descriptionController.text.trim();
-    final roomCode = _roomCodeController.text.trim();
-    final buildingId = _buildingIdController.text.trim();
-    final floor = int.tryParse(_floorController.text.trim());
+    final longitude = double.parse(_longitudeController.text.trim());
+    final latitude = double.parse(_latitudeController.text.trim());
 
     if (name.isEmpty ||
-        description.isEmpty ||
-        floor == null ||
-        buildingId.isEmpty) {
+        description.isEmpty) {
       mySnackbar(context, "Please fill all the fields", Type.error);
       return;
     }
@@ -60,27 +56,27 @@ class _AddRoomState extends ConsumerState<AddRoom> {
 
       ref.read(imageUrlProvider.notifier).state = url;
 
-      await notifier.addRoom(
-        RoomModel(
+      await notifier.addBuilding(
+        BuildingModel(
           name: name,
           description: description,
-          image_url: url,
-          roomCode: roomCode,
-          floor: floor,
-          buildingId: buildingId,
+          location: GeoPoint(
+            latitude,
+            longitude
+          ),
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
       );
 
-      final currentState = ref.read(roomNotifierProvider);
+      final currentState = ref.read(buildingNotifierProvider);
       if (currentState.error != null) {
-        mySnackbar(context, "Failed to add room: ${currentState.error}", Type.error);
-        print('Room notifier error: ${currentState.error}');
+        mySnackbar(context, "Failed to add building: ${currentState.error}", Type.error);
+        print('Building notifier error: ${currentState.error}');
         return;
       }
 
-      mySnackbar(context, "Room added successfully", Type.success);
+      mySnackbar(context, "Building added successfully", Type.success);
 
       _clearForm(ref);
 
@@ -89,7 +85,7 @@ class _AddRoomState extends ConsumerState<AddRoom> {
       }
 
     } catch (e) {
-      mySnackbar(context, "Failed to add room: $e", Type.error);
+      mySnackbar(context, "Failed to add building: $e", Type.error);
       print('Error in _submitHandler: $e');
     } finally {
       if (mounted) {
@@ -101,9 +97,8 @@ class _AddRoomState extends ConsumerState<AddRoom> {
   void _clearForm(WidgetRef ref) {
     _nameController.clear();
     _descriptionController.clear();
-    _roomCodeController.clear();
-    _floorController.clear();
-    _buildingIdController.clear();
+    _longitudeController.clear();
+    _latitudeController.clear();
     ref.read(localImageProvider.notifier).state = null;
     ref.read(imageUrlProvider.notifier).state = null;
   }
@@ -112,21 +107,20 @@ class _AddRoomState extends ConsumerState<AddRoom> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _roomCodeController.dispose();
-    _floorController.dispose();
-    _buildingIdController.dispose();
+    _longitudeController.dispose();
+    _latitudeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(roomNotifierProvider.notifier);
+    final notifier = ref.read(buildingNotifierProvider.notifier);
     final File? selectedImage = ref.watch(localImageProvider);
-    final state = ref.watch(roomNotifierProvider);
+    final state = ref.watch(buildingNotifierProvider);
     final isLoading = ref.watch(loadingProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Room")),
+      appBar: AppBar(title: const Text("Add Building")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -199,19 +193,14 @@ class _AddRoomState extends ConsumerState<AddRoom> {
               inputType: TextInputType.text,
             ),
             MyTextField(
-              controller: _roomCodeController,
-              name: "Room Code",
+              controller: _longitudeController,
+              name: "Longitude",
               inputType: TextInputType.text,
             ),
             MyTextField(
-              controller: _floorController,
-              name: "Floor",
+              controller: _latitudeController,
+              name: "Latitude",
               inputType: TextInputType.number,
-            ),
-            MyTextField(
-              controller: _buildingIdController,
-              name: "Building Id",
-              inputType: TextInputType.text,
             ),
             const SizedBox(height: 20),
             MyButton(
