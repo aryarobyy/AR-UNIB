@@ -10,26 +10,26 @@ final buildingServiceProvider = Provider((ref) => BuildingService());
 class BuildingState {
   final bool isLoading;
   final List<BuildingModel> buildings;
-  final BuildingModel? selectedBuilding;
+  final BuildingModel? building;
   final String? error;
 
   const BuildingState({
     this.isLoading = false,
     this.buildings = const [],
-    this.selectedBuilding,
+    this.building,
     this.error,
   });
 
   BuildingState copyWith({
     bool? isLoading,
     List<BuildingModel>? buildings,
-    BuildingModel? selectedBuilding,
+    BuildingModel? building,
     String? error,
   }) {
     return BuildingState(
       isLoading: isLoading ?? this.isLoading,
       buildings: buildings ?? this.buildings,
-      selectedBuilding: selectedBuilding ?? this.selectedBuilding,
+      building: building ?? this.building,
       error: error ?? this.error,
     );
   }
@@ -40,7 +40,7 @@ class BuildingNotifier extends StateNotifier<BuildingState> {
 
   final BuildingService _service;
 
-  Future<void> fetchAllBuildings() async {
+  Future<void> getBuildings() async {
     state = state.copyWith(isLoading: true);
     try {
       final result = await _service.getAllBuildings();
@@ -50,11 +50,11 @@ class BuildingNotifier extends StateNotifier<BuildingState> {
     }
   }
 
-  Future<void> fetchBuilding(String id) async {
+  Future<void> getBuilding(String id) async {
     state = state.copyWith(isLoading: true);
     try {
       final building = await _service.getBuildingById(id);
-      state = state.copyWith(selectedBuilding: building, isLoading: false);
+      state = state.copyWith(building: building, isLoading: false);
     } catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
@@ -63,7 +63,7 @@ class BuildingNotifier extends StateNotifier<BuildingState> {
   Future<void> addBuilding(BuildingModel building) async {
     try {
       await _service.createBuilding(building);
-      await fetchAllBuildings();
+      await getBuildings();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -72,7 +72,7 @@ class BuildingNotifier extends StateNotifier<BuildingState> {
   Future<void> updateBuilding(BuildingModel building) async {
     try {
       await _service.updateBuilding(building);
-      await fetchAllBuildings();
+      await getBuildings();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -81,7 +81,7 @@ class BuildingNotifier extends StateNotifier<BuildingState> {
   Future<void> deleteBuilding(String id) async {
     try {
       await _service.deleteBuilding(id);
-      await fetchAllBuildings();
+      await getBuildings();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }

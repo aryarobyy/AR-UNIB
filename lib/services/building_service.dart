@@ -6,7 +6,7 @@ class BuildingService {
   FirebaseFirestore.instance.collection('buildings');
 
   Future<void> createBuilding(BuildingModel building) async {
-    await _buildingRef.doc(building.id.toString()).set(building.toMap());
+    await _buildingRef.doc(building.id).set(building.toMap());
   }
 
   Future<List<BuildingModel>> getAllBuildings() async {
@@ -16,7 +16,7 @@ class BuildingService {
         .toList();
   }
 
-  Future<BuildingModel?> getBuildingById(int id) async {
+  Future<BuildingModel?> getBuildingById(String id) async {
     final doc = await _buildingRef.doc(id.toString()).get();
     if (doc.exists) {
       return BuildingModel.fromMap(doc.data() as Map<String, dynamic>);
@@ -25,10 +25,10 @@ class BuildingService {
   }
 
   Future<void> updateBuilding(BuildingModel building) async {
-    await _buildingRef.doc(building.id.toString()).update(building.toMap());
+    await _buildingRef.doc(building.id).update(building.toMap());
   }
 
-  Future<void> deleteBuilding(int id) async {
-    await _buildingRef.doc(id.toString()).delete();
+  Future<void> deleteBuilding(String id) async {
+    await _buildingRef.doc(id).delete();
   }
 }

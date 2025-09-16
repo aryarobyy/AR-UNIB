@@ -6,7 +6,7 @@ class RoomService {
   FirebaseFirestore.instance.collection('rooms');
 
   Future<void> createRoom(RoomModel room) async {
-    await _roomRef.doc(room.id.toString()).set(room.toMap());
+    await _roomRef.doc(room.id).set(room.toMap());
   }
 
   Future<List<RoomModel>> getAllRooms() async {
@@ -16,7 +16,7 @@ class RoomService {
         .toList();
   }
 
-  Future<List<RoomModel>> getRoomsByBuildingId(int buildingId) async {
+  Future<List<RoomModel>> getRoomsByBuildingId(String buildingId) async {
     final snapshot =
     await _roomRef.where('building_id', isEqualTo: buildingId).get();
     return snapshot.docs
@@ -24,8 +24,8 @@ class RoomService {
         .toList();
   }
 
-  Future<RoomModel?> getRoomById(int id) async {
-    final doc = await _roomRef.doc(id.toString()).get();
+  Future<RoomModel?> getRoomById(String id) async {
+    final doc = await _roomRef.doc(id).get();
     if (doc.exists) {
       return RoomModel.fromMap(doc.data() as Map<String, dynamic>);
     }
@@ -33,10 +33,10 @@ class RoomService {
   }
 
   Future<void> updateRoom(RoomModel room) async {
-    await _roomRef.doc(room.id.toString()).update(room.toMap());
+    await _roomRef.doc(room.id).update(room.toMap());
   }
 
-  Future<void> deleteRoom(int id) async {
-    await _roomRef.doc(id.toString()).delete();
+  Future<void> deleteRoom(String id) async {
+    await _roomRef.doc(id).delete();
   }
 }

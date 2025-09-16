@@ -40,7 +40,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
   final RoomService _service;
 
-  Future<void> fetchAllRooms() async {
+  Future<void> getRooms() async {
     state = state.copyWith(isLoading: true);
     try {
       final result = await _service.getAllRooms();
@@ -50,7 +50,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
     }
   }
 
-  Future<void> fetchRoomsByBuilding(String buildingId) async {
+  Future<void> getRoomsByBuilding(String buildingId) async {
     state = state.copyWith(isLoading: true);
     try {
       final result = await _service.getRoomsByBuildingId(buildingId);
@@ -60,7 +60,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
     }
   }
 
-  Future<void> fetchRoom(String id) async {
+  Future<void> getRoomById(String id) async {
     state = state.copyWith(isLoading: true);
     try {
       final room = await _service.getRoomById(id);
@@ -71,27 +71,30 @@ class RoomNotifier extends StateNotifier<RoomState> {
   }
 
   Future<void> addRoom(RoomModel room) async {
+    state = state.copyWith(isLoading: true);
     try {
       await _service.createRoom(room);
-      await fetchAllRooms();
+      await getRooms();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
   }
 
   Future<void> updateRoom(RoomModel room) async {
+    state = state.copyWith(isLoading: true);
     try {
       await _service.updateRoom(room);
-      await fetchAllRooms();
+      await getRooms();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
   }
 
   Future<void> deleteRoom(String id) async {
+    state = state.copyWith(isLoading: true);
     try {
       await _service.deleteRoom(id);
-      await fetchAllRooms();
+      await getRooms();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
