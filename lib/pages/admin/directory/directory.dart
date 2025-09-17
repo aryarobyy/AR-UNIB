@@ -1,7 +1,13 @@
 import 'package:ar_unib/component/card.dart';
+import 'package:ar_unib/model/index.dart';
+import 'package:ar_unib/notifier/building_notifier.dart';
+import 'package:ar_unib/notifier/room_notifier.dart';
+import 'package:ar_unib/pages/admin/edit/building_edit.dart';
+import 'package:ar_unib/pages/admin/edit/room_edit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 part 'room_directory.dart';
 part 'building_directory.dart';
@@ -79,7 +85,6 @@ class Directory extends ConsumerWidget {
         ),
         body: Column(
           children: [
-            // Header Section
             Container(
               margin: const EdgeInsets.fromLTRB(24, 8, 24, 16),
               child: Container(
@@ -145,7 +150,6 @@ class Directory extends ConsumerWidget {
               ),
             ),
 
-            // Custom Tab Bar
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               decoration: BoxDecoration(
