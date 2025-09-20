@@ -38,16 +38,10 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
   final _imageUrlController = TextEditingController();
   final _buildingIdController = TextEditingController();
 
-  bool get isEditing => widget.room != null;
-
   @override
   void initState() {
     super.initState();
-    if (isEditing) {
-      _initializeFields();
-    } else {
-      _buildingIdController.text = widget.room.buildingId;
-    }
+    _initializeFields();
   }
 
   void _initializeFields() {
@@ -76,7 +70,7 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: MyAppbar(
-        title: isEditing ? 'Edit Ruangan' : 'Tambah Ruangan Baru'
+        title: 'Edit Ruangan'
       ),
       body: Form(
         key: _formKey,
@@ -308,7 +302,6 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
         filled: true,
         fillColor: Colors.white,
       ),
-      readOnly: isEditing,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return 'ID gedung harus diisi';
@@ -345,7 +338,7 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
           height: 56,
           child: MyButton(
             onPressed: _isLoading ? null : _saveRoom,
-            text: isEditing ? "Simpan Perubahan" : "Tambah Ruangan",
+            text: "Simpan Perubahan",
             variant: ButtonVariant.primary,
           ),
         ),
@@ -373,9 +366,7 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
 
   void _removeImage() {
     ref.read(localImageProvider.notifier).state = null;
-    if (isEditing) {
-      _imageUrlController.clear();
-    }
+    _imageUrlController.clear();
   }
 
   void _searchBuilding() {
@@ -405,7 +396,7 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
 
       mySnackbar(
         context,
-        isEditing ? 'Ruangan berhasil diperbarui' : 'Ruangan berhasil ditambahkan',
+        'Ruangan berhasil diperbarui',
         Type.success
       );
 
