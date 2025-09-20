@@ -1,3 +1,4 @@
+import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/model/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +21,8 @@ class _RoomDetailState extends ConsumerState<RoomDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          widget.room.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blue[600],
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+      appBar: MyAppbar(
+        title: widget.room.name
       ),
       body: SingleChildScrollView(
         child: Column(

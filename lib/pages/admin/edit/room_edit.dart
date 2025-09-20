@@ -1,3 +1,4 @@
+import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/component/button.dart';
 import 'package:ar_unib/component/snackbar.dart';
 import 'package:ar_unib/model/index.dart';
@@ -74,24 +75,8 @@ class _RoomEditState extends ConsumerState<RoomEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          isEditing ? 'Edit Ruangan' : 'Tambah Ruangan Baru',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blue[600],
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          if (isEditing)
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: _showDeleteConfirmation,
-            ),
-        ],
+      appBar: MyAppbar(
+        title: isEditing ? 'Edit Ruangan' : 'Tambah Ruangan Baru'
       ),
       body: Form(
         key: _formKey,

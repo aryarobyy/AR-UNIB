@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/component/button.dart';
 import 'package:ar_unib/component/snackbar.dart';
 import 'package:ar_unib/component/text_field.dart';
+import 'package:ar_unib/main.dart';
 import 'package:ar_unib/notifier/building_notifier.dart';
 import 'package:ar_unib/notifier/room_notifier.dart';
 import 'package:ar_unib/services/image_service.dart';
@@ -27,40 +29,8 @@ class Add extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.black87,
-              size: 18,
-            ),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Add Content",
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
+      appBar: MyAppbar(
+        title: "Add Content",
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -115,7 +85,7 @@ class Add extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Choose what you'd like to add",
+                          "Choose what you'd want to add",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white.withOpacity(0.8),
@@ -307,7 +277,6 @@ class Add extends ConsumerWidget {
             ),
 
             const SizedBox(height: 32),
-
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -365,69 +334,6 @@ class Add extends ConsumerWidget {
                     title: "Building",
                     description: "Collection of rooms organized in a structure",
                     color: Colors.orange,
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    "Alternative Actions",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MyButton(
-                          text: "Add Room",
-                          icon: Icons.meeting_room,
-                          variant: ButtonVariant.primary,
-                          height: 50,
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddRoom(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: MyButton(
-                          text: "Add Building",
-                          icon: Icons.apartment,
-                          variant: ButtonVariant.tertiary,
-                          height: 50,
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddBuilding(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),

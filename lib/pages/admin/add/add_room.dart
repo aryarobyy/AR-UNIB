@@ -126,7 +126,9 @@ class _AddRoomState extends ConsumerState<AddRoom> {
     final isLoading = ref.watch(loadingProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Room")),
+      appBar: MyAppbar(
+        title: "Add Room",
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

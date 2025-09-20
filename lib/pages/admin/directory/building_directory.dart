@@ -8,41 +8,20 @@ class BuildingDirectory extends ConsumerStatefulWidget {
 }
 
 class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
-  final List<Map<String, dynamic>> dummyBuildings = [
-    {
-      'id': '1',
-      'title': 'Engineering Faculty Building',
-      'subtitle': 'Main Campus',
-      'description': 'Primary building housing all engineering departments',
-      'roomCount': 45,
-      'floors': 5,
-      'status': 'Active',
-      'lastUpdated': '1 hour ago',
-    },
-    {
-      'id': '2',
-      'title': 'Science Complex',
-      'subtitle': 'North Wing',
-      'description': 'Modern science laboratories and research facilities',
-      'roomCount': 32,
-      'floors': 4,
-      'status': 'Active',
-      'lastUpdated': '3 hours ago',
-    },
-    {
-      'id': '3',
-      'title': 'Central Library',
-      'subtitle': 'Academic District',
-      'description': 'Multi-floor library with digital resources',
-      'roomCount': 18,
-      'floors': 3,
-      'status': 'Renovation',
-      'lastUpdated': '2 days ago',
-    },
-  ];
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(buildingNotifierProvider.notifier).getBuildings();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final buildingsData = ref.read(buildingNotifierProvider);
+    final state = ref.watch(buildingNotifierProvider);
+    final buildings = buildingsData.buildings;
+
     return Column(
       children: [
         Container(
@@ -63,23 +42,9 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
             children: [
               _buildStatItem(
                 icon: Icons.apartment,
-                title: "${dummyBuildings.length}",
+                title: "${buildings.length}",
                 subtitle: "Buildings",
                 color: Colors.orange,
-              ),
-              const SizedBox(width: 16),
-              _buildStatItem(
-                icon: Icons.meeting_room,
-                title: "${dummyBuildings.map((b) => b['roomCount']).reduce((a, b) => a + b)}",
-                subtitle: "Total Rooms",
-                color: Colors.blue,
-              ),
-              const SizedBox(width: 16),
-              _buildStatItem(
-                icon: Icons.layers,
-                title: "${dummyBuildings.map((b) => b['floors']).reduce((a, b) => a + b)}",
-                subtitle: "Total Floors",
-                color: Colors.green,
               ),
             ],
           ),
@@ -124,14 +89,19 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
           ),
         ),
 
-        Expanded(
-          child: dummyBuildings.isEmpty
+        state.isLoading
+            ? const Expanded(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ) : Expanded(
+          child: buildings.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
             physics: const BouncingScrollPhysics(),
-            itemCount: dummyBuildings.length,
+            itemCount: buildings.length,
             itemBuilder: (context, index) {
-              final building = dummyBuildings[index];
+              final building = buildings[index];
               return _buildBuildingCard(building);
             },
           ),
@@ -181,7 +151,7 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
     );
   }
 
-  Widget _buildBuildingCard(Map<String, dynamic> building) {
+  Widget _buildBuildingCard(BuildingModel building) {
     return Container(
         margin: const EdgeInsets.only(bottom: 12),
         child: Card(
@@ -228,7 +198,7 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
                           children: [
                           Expanded(
                           child: Text(
-                            building['title'],
+                            building.name,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -236,42 +206,20 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: building['status'] == 'Active'
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.orange.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            building['status'],
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: building['status'] == 'Active'
-                                  ? Colors.green[700]
-                                  : Colors.orange[700],
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
+                    // Text(
+                    //   building['subtitle'],
+                    //   style: TextStyle(
+                    //     fontSize: 14,
+                    //     color: Colors.orange[600],
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 6),
                     Text(
-                      building['subtitle'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.orange[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      building['description'],
+                      building.description ?? "",
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -288,40 +236,32 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
                       color: Colors.grey[500],
                     ),
                     const SizedBox(width: 4),
-                        Text(
-                          "${building['roomCount']} rooms",
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
+                        // Text( //Soon dibikin
+                        //   "${building['roomCount']} rooms",
+                        //   style: TextStyle(
+                        //     fontSize: 11,
+                        //     color: Colors.grey[600],
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 16),
                         Icon(
                           Icons.layers,
                           size: 14,
                           color: Colors.grey[500],
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          "${building['floors']} floors",
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                        // const SizedBox(width: 4),
+                        // Text( //Soon
+                        //   "${building.floors} floors",
+                        //   style: TextStyle(
+                        //     fontSize: 11,
+                        //     color: Colors.grey[600],
+                        //   ),
+                        // ),
                         const SizedBox(width: 16),
                         Icon(
                           Icons.access_time,
                           size: 14,
                           color: Colors.grey[500],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          building['lastUpdated'],
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                          ),
                         ),
                       ],
                     ),
@@ -349,14 +289,19 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
                             }
                           },
                           itemBuilder: (BuildContext context) => [
-                            const PopupMenuItem<String>(
+                            PopupMenuItem<String>(
                               value: 'edit',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit, size: 18),
-                                  SizedBox(width: 8),
-                                  Text('Edit'),
-                                ],
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => BuildingEdit(building: building)));
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit, size: 18),
+                                    SizedBox(width: 8),
+                                    Text('Edit'),
+                                  ],
+                                ),
                               ),
                             ),
                             const PopupMenuItem<String>(

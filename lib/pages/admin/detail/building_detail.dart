@@ -1,8 +1,8 @@
+import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/model/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BuildingDetail extends ConsumerStatefulWidget {
   final BuildingModel building;
@@ -21,24 +21,8 @@ class _BuildingDetailState extends ConsumerState<BuildingDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          widget.building.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.indigo[600],
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          if (widget.building.location != null)
-            IconButton(
-              icon: const Icon(Icons.map),
-              onPressed: () {},
-            ),
-        ],
+      appBar: MyAppbar(
+        title: widget.building.name
       ),
       body: SingleChildScrollView(
         child: Column(

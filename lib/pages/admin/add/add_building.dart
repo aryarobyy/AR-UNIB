@@ -120,7 +120,9 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
     final isLoading = ref.watch(loadingProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Building")),
+      appBar: MyAppbar(
+        title: "Add Building",
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
