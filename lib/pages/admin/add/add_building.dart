@@ -19,12 +19,19 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   final _imageUrlController = TextEditingController();
+  late StateController<File?> _localImageNotifier;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    ref.invalidate(localImageProvider);
+    super.deactivate();
   }
 
   @override
@@ -54,14 +61,28 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
               _buildImageSection(),
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Informasi Dasar'),
+              Text(
+                'Informasi Dasar',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
               const SizedBox(height: 16),
               _buildNameField(),
               const SizedBox(height: 16),
               _buildDescriptionField(),
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Lokasi'),
+              Text(
+                'Lokasi',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -84,7 +105,7 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
   }
 
   Widget _buildImageSection() {
-    final File? _selectedImage = ref.watch(localImageProvider);
+    final File? selectedImage = ref.watch(localImageProvider);
 
     return Container(
       width: double.infinity,
@@ -94,15 +115,51 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.grey[300]!),
       ),
-      child: _selectedImage != null
-          ? ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.file(
-          _selectedImage!,
-          fit: BoxFit.cover,
-        ),
-      )
-          : _buildImagePlaceholder(),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: selectedImage != null
+              ? Image.file(
+              selectedImage,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+            )
+                : SizedBox.expand(child: _buildImagePlaceholder()),
+
+            ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.camera_alt, color: Colors.white),
+                onPressed: _pickImage,
+              ),
+            ),
+          ),
+          if (selectedImage != null)
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.white),
+                  onPressed: _removeImage,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -132,17 +189,6 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
       ),
     );
   }
@@ -282,66 +328,31 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
   }
 
   Widget _buildActionButtons() {
+    final _isLoading = ref.watch(loadingProvider);
     return Column(
       children: [
         SizedBox(
           width: double.infinity,
           height: 56,
-          child: ElevatedButton(
+          child: MyButton(
             onPressed: _isLoading ? null : _saveBuilding,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.indigo[600],
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child: _isLoading
-                ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-                : Text(
-              'Simpan',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            text: "Simpan Perubahan",
+            variant: ButtonVariant.primary,
           ),
         ),
         const SizedBox(height: 12),
-
         SizedBox(
           width: double.infinity,
           height: 56,
-          child: OutlinedButton(
+          child: MyButton(
             onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.grey[700],
-              side: BorderSide(color: Colors.grey[300]!),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Batal',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            text: "Batal",
+            variant: ButtonVariant.outline,
           ),
         ),
       ],
     );
   }
-
   Future<void> _pickImage() async {
     final file = await _imageService.pickImage();
     if (file != null) {
@@ -371,14 +382,12 @@ class _AddBuildingState extends ConsumerState<AddBuilding> {
     final description = _descriptionController.text.trim();
     final longitude = double.parse(_longitudeController.text.trim());
     final latitude = double.parse(_latitudeController.text.trim());
-
-    setState(() {
-      _isLoading = true;
-    });
+    final id = Uuid().v4();
 
     try {
       await notifier.addBuilding(
           BuildingModel(
+            id: id,
             name: name,
             description: description,
             imageUrl: imgUrl,

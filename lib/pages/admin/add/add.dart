@@ -3,22 +3,22 @@ import 'dart:io';
 import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/component/button.dart';
 import 'package:ar_unib/component/snackbar.dart';
-import 'package:ar_unib/component/text_field.dart';
-import 'package:ar_unib/main.dart';
 import 'package:ar_unib/notifier/building_notifier.dart';
 import 'package:ar_unib/notifier/room_notifier.dart';
 import 'package:ar_unib/services/image_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:ar_unib/model/index.dart';
+import 'package:uuid/uuid.dart';
 
 part 'add_building.dart';
 part 'add_room.dart';
 
-final localImageProvider = StateProvider<File?>((ref) => null);
+final localImageProvider = StateProvider.autoDispose<File?>((ref) => null);
 final imageUrlProvider = StateProvider<String?>((ref) => null);
 final loadingProvider = StateProvider<bool>((ref) => false);
 

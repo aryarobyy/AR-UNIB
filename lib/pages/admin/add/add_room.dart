@@ -17,12 +17,18 @@ class _AddRoomState extends ConsumerState<AddRoom> {
   final _roomCodeController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _floorController = TextEditingController();
-  final _imageUrlController = TextEditingController();
   final _buildingIdController = TextEditingController();
+  late StateController<File?> _localImageNotifier;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    ref.invalidate(localImageProvider);
+    super.deactivate();
   }
 
   @override
@@ -31,8 +37,8 @@ class _AddRoomState extends ConsumerState<AddRoom> {
     _roomCodeController.dispose();
     _descriptionController.dispose();
     _floorController.dispose();
-    _imageUrlController.dispose();
     _buildingIdController.dispose();
+    _localImageNotifier.state = null;
     super.dispose();
   }
 
@@ -329,7 +335,6 @@ class _AddRoomState extends ConsumerState<AddRoom> {
 
   void _removeImage() {
     ref.read(localImageProvider.notifier).state = null;
-    _imageUrlController.clear();
   }
 
   void _searchBuilding() {
@@ -342,18 +347,20 @@ class _AddRoomState extends ConsumerState<AddRoom> {
     }
     final notifier = ref.read(roomNotifierProvider.notifier);
     final imgUrl = ref.read(imageUrlProvider);
+    final id = Uuid().v4();
     ref.read(loadingProvider.notifier).state = true;
 
     try {
       await notifier.addRoom(
-          RoomModel(
-              buildingId: _buildingIdController.text,
-              name: _nameController.text,
-              roomCode: _roomCodeController.text,
-              description: _descriptionController.text,
-              floor: _floorController.text.isNotEmpty ? int.parse(_floorController.text) : null,
-              image_url: imgUrl,
-          )
+        RoomModel(
+          buildingId: _buildingIdController.text,
+          name: _nameController.text,
+          roomCode: _roomCodeController.text,
+          description: _descriptionController.text,
+          floor: _floorController.text.isNotEmpty ? int.parse(_floorController.text) : null,
+          image_url: imgUrl,
+          id: id,
+        )
       );
 
       mySnackbar(
