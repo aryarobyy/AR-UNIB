@@ -152,6 +152,8 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
   }
 
   Widget _buildBuildingCard(BuildingModel building) {
+    final notifier = ref.read(buildingNotifierProvider.notifier);
+
     return Container(
         margin: const EdgeInsets.only(bottom: 12),
         child: Card(
@@ -314,17 +316,34 @@ class _BuildingDirectoryState extends ConsumerState<BuildingDirectory> {
                                 ],
                               ),
                             ),
-                            const PopupMenuItem<String>(
+                            PopupMenuItem<String>(
                               value: 'delete',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete, size: 18, color: Colors.red),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ],
+                              child: InkWell(
+                                onTap: () async {
+                                  MyPopup.show(
+                                    context,
+                                    title: "Delete Building",
+                                    agreeText: "Delete",
+                                    disagreeText: "Cancel",
+                                    onAgreePressed: () async {
+                                      await notifier.deleteBuilding(building.id!);
+                                      Navigator.pop(context);
+                                    },
+                                    onDisagreePressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete, size: 18, color: Colors.red),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],

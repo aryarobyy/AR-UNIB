@@ -11,14 +11,14 @@ class _RoomDirectoryState extends ConsumerState<RoomDirectory> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(roomNotifierProvider.notifier).getRooms();
+      await ref.watch(roomNotifierProvider.notifier).getRooms();
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final roomsData = ref.read(roomNotifierProvider);
+    final roomsData = ref.watch(roomNotifierProvider);
     final state = ref.watch(roomNotifierProvider);
     final rooms = roomsData.rooms;
 
@@ -85,6 +85,8 @@ class _RoomDirectoryState extends ConsumerState<RoomDirectory> {
   }
 
   Widget _buildRoomCard(RoomModel room) {
+    final notifier = ref.read(roomNotifierProvider.notifier);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -234,14 +236,31 @@ class _RoomDirectoryState extends ConsumerState<RoomDirectory> {
                         ],
                       ),
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, size: 18, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.red)),
-                        ],
+                      child: InkWell(
+                        onTap: () async {
+                          MyPopup.show(
+                            context,
+                            title: "Delete room",
+                            agreeText: "Delete",
+                            disagreeText: "Cancel",
+                            onAgreePressed: () async {
+                              await notifier.deleteRoom(room.id!);
+                              Navigator.pop(context);
+                            },
+                            onDisagreePressed: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, size: 18, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Delete', style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
                       ),
                     ),
                   ],
