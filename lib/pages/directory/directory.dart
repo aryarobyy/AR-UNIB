@@ -1,9 +1,13 @@
+import 'package:ar_unib/component/appbar.dart';
 import 'package:ar_unib/component/card.dart';
+import 'package:ar_unib/component/popup.dart';
 import 'package:ar_unib/model/index.dart';
 import 'package:ar_unib/notifier/building_notifier.dart';
 import 'package:ar_unib/notifier/room_notifier.dart';
 import 'package:ar_unib/pages/admin/edit/building_edit.dart';
 import 'package:ar_unib/pages/admin/edit/room_edit.dart';
+import 'package:ar_unib/pages/detail/building_detail.dart';
+import 'package:ar_unib/pages/detail/room_detail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +17,11 @@ part 'room_directory.dart';
 part 'building_directory.dart';
 
 class Directory extends ConsumerWidget {
-  const Directory({super.key});
+  bool isAdmin = false;
+  Directory({
+    super.key,
+    required this.isAdmin,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,67 +29,8 @@ class Directory extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black87,
-                size: 18,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            "Directory",
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.search,
-                  color: Colors.black87,
-                  size: 20,
-                ),
-              ),
-              onPressed: () {
-                // Handle search functionality
-              },
-            ),
-            const SizedBox(width: 16),
-          ],
+        appBar: MyAppbar(
+          title: "Directory"
         ),
         body: Column(
           children: [
@@ -214,10 +163,10 @@ class Directory extends ConsumerWidget {
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                child: const TabBarView(
+                child: TabBarView(
                   children: [
-                    RoomDirectory(),
-                    BuildingDirectory(),
+                    RoomDirectory(isAdmin: isAdmin,),
+                    BuildingDirectory(isAdmin: isAdmin,),
                   ],
                 ),
               ),
