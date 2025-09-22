@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +8,7 @@ enum ButtonVariant {
   primary,
   secondary,
   tertiary,
+  outline,
 }
 
 class MyButton extends ConsumerWidget {
@@ -88,6 +92,8 @@ class MyButton extends ConsumerWidget {
         return isTapped ? Colors.blue.withOpacity(0.1) : Colors.transparent;
       case ButtonVariant.tertiary:
         return isTapped ? Colors.green : Colors.grey.shade100;
+      case ButtonVariant.outline:
+        return Colors.white;
     }
   }
 
@@ -99,6 +105,8 @@ class MyButton extends ConsumerWidget {
         return isTapped ? Colors.blue : Colors.grey.shade700;
       case ButtonVariant.tertiary:
         return isTapped ? Colors.white : Colors.black87;
+      case ButtonVariant.outline:
+        return isTapped ? Colors.grey.shade700 : Colors.grey.shade500;
     }
   }
 
@@ -109,6 +117,8 @@ class MyButton extends ConsumerWidget {
       case ButtonVariant.secondary:
         return 8.0;
       case ButtonVariant.tertiary:
+        return 12.0;
+      case ButtonVariant.outline:
         return 12.0;
     }
   }
@@ -126,6 +136,11 @@ class MyButton extends ConsumerWidget {
         return BorderSide(
           color: isTapped ? Colors.green : Colors.grey.withOpacity(0.3),
           width: 2.0,
+        );
+      case ButtonVariant.outline:
+        return BorderSide(
+          color: Colors.grey.shade300,
+          width: 1.5,
         );
     }
   }
